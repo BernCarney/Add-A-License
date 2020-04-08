@@ -1,8 +1,12 @@
 [tool.poetry]
-name = "add_a_license"
+name = "add-a-license"
 version = "0.1.0"
 description = ""
 authors = ["Bern Carney <18447002+BernCarney@users.noreply.github.com>"]
+readme = "README.md"
+
+[tool.poetry.scripts]
+aalicense = "add_a_license.main:app"
 
 [tool.poetry.dependencies]
 python = "^3.7"
