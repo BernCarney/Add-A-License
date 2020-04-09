@@ -22,7 +22,7 @@ from pathlib import Path
 
 import typer
 
-from add_a_license import __version__
+from add_a_license.__version__ import __version__
 
 app = typer.Typer()
 
