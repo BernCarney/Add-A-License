@@ -50,7 +50,21 @@ def list_licenses():
     """
     Prompt user for what license they would like to add
     """
-    pass
+    try:
+        r = requests.get(LICENSESAPI)
+        licenses_json = r.json()
+
+        if r.status_code == 200:
+            typer.echo("Available licenses:\n")
+            i = 1
+            for item in licenses_json:
+                name = item["name"]
+                abbr = item["spdx_id"]
+                typer.echo(f"{i:02d}. {abbr}:  {name}")
+                i += 1
+    except requests.exceptions.Timeout:
+        # prompt to retry connection
+        pass
 
 
 @app.command("get")
