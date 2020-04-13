@@ -27,6 +27,10 @@ def test_get_license():
     pass
 
 
+def test_get_nan_license():
+    pass
+
+
 def test_invalid_option():
     pass
 
