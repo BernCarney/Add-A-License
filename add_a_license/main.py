@@ -4,7 +4,6 @@
 # various licenses to their project without having to cut and paste text.
 #
 # Workflow
-# 1. aalicense with no input or --help should show what the program and commands do
 # 2. aalicense GET <LICENSE> with no options should get the license and put it in the
 #    current folder
 # 3. aalicense GET <LICENSE> [DIRECTORY] should place the license in the given path
@@ -21,10 +20,13 @@
 from pathlib import Path
 
 import typer
+import requests
 
 from add_a_license.__version__ import __version__
 
+# module variables
 app = typer.Typer()
+LICENSESAPI = "https://api.github.com/licenses"
 
 
 def print_version():
@@ -33,14 +35,13 @@ def print_version():
 
 
 @app.callback()
-def main(
-    version: bool = typer.Option(
-        False, "--version", "-v", help="Print version and exit.", callback=print_version
-    )
-):
+def main():
     """
     A program to help you easily add a license to your project.
     """
+    #     version: bool = typer.Option(
+    #     False, "--version", "-v", help="Print version and exit.", callback=print_version
+    # )
 
 
 @app.command("list")
@@ -55,7 +56,7 @@ def list_licenses():
 def get_license(
     license: str,
     dir: Path = typer.Option(
-        ...,
+        "./",
         "--dir",
         "-d",
         exists=True,
@@ -68,7 +69,15 @@ def get_license(
     """
     Get a LICENSE file and copy it to the project
     """
-    pass
+    try:
+        r = requests.get(LICENSESAPI)
+        if r.status_code == 200:
+            typer.echo(f"We did it!")
+        else:
+            typer.echo(f"We didn't do it unfortunately")
+    except requests.exceptions.Timeout:
+        # prompt to retry connection
+        pass
 
 
 if __name__ == "__main__":
