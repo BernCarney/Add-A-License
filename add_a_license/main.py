@@ -18,7 +18,7 @@
 #    and just use current year
 
 from pathlib import Path
-
+import json
 import typer
 import requests
 
@@ -71,8 +71,29 @@ def get_license(
     """
     try:
         r = requests.get(LICENSESAPI)
+        licenses_json = r.json()
+        licenses_lst = []
+
+        # make sure API is available
         if r.status_code == 200:
-            typer.echo(f"We did it!")
+            # build a list of the licenses available
+            for item in licenses_json:
+                licenses_lst.append(item["key"])
+
+            if license.lower() in licenses_lst:
+                # they selected a valid license, now get the test
+                license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
+                license_bdy = license_json["body"]
+                typer.echo(f"{license_bdy}")
+            else:
+                typer.echo("That license is not currently available.")
+                typer.echo("Please choose a license from available licenses below:\n")
+                i = 1
+                for item in licenses_json:
+                    name = item["name"]
+                    abbr = item["spdx_id"]
+                    typer.echo(f"{i:02d}. {abbr}:  {name}")
+                    i += 1
         else:
             typer.echo(f"We didn't do it unfortunately")
     except requests.exceptions.Timeout:
