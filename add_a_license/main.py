@@ -18,7 +18,7 @@
 #    and just use current year
 
 from pathlib import Path
-import json
+import datetime
 import typer
 import requests
 
@@ -27,6 +27,7 @@ from add_a_license.__version__ import __version__
 # module variables
 app = typer.Typer()
 LICENSESAPI = "https://api.github.com/licenses"
+NOW = datetime.datetime.now()
 
 
 def print_version():
@@ -84,6 +85,10 @@ def get_license(
                 # they selected a valid license, now get the test
                 license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
                 license_bdy = license_json["body"]
+
+                # replace the [year] woth current year
+                license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
+                license_bdy = license_bdy.replace("[fullname]", "Bernard J. Carney", 1)
                 typer.echo(f"{license_bdy}")
             else:
                 typer.echo("That license is not currently available.")
