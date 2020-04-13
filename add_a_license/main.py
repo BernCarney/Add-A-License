@@ -120,5 +120,57 @@ def get_license(
         pass
 
 
+@app.command("info")
+def get_info(license: str):
+    """
+    Get a LICENSE info and print to terminal.
+    """
+
+    try:
+        r = requests.get(LICENSESAPI)
+        licenses_json = r.json()
+        licenses_lst = []
+
+        # make sure API is available
+        if r.status_code == 200:
+            # build a list of the licenses available
+            for item in licenses_json:
+                licenses_lst.append(item["key"])
+
+            if license.lower() in licenses_lst:
+                # they selected a valid license, now get the test
+                license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
+                license_dsc = license_json["description"]
+                license_name = license_json["name"]
+                license_url = license_json["html_url"]
+                license_perm = []
+
+                for item in license_json["permissions"]:
+                    license_perm.append(item)
+
+                typer.echo(f"\nName: {license_name}")
+                typer.echo(f"\nURL: {license_url}")
+
+                # print list of permissions
+                typer.echo(f"\nPermissions:")
+                for x in license_perm:
+                    typer.echo(f"\t{x}")
+                typer.echo(f"\nDescription: \n\t{license_dsc}\n")
+            else:
+                typer.echo("That license is not currently available.")
+                typer.echo("Please choose a license from available licenses below:\n")
+                i = 1
+                for item in licenses_json:
+                    name = item["name"]
+                    abbr = item["spdx_id"]
+                    typer.echo(f"{i:02d}. {abbr}:  {name}")
+                    i += 1
+        else:
+            typer.echo(f"We didn't do it unfortunately")
+    except requests.exceptions.Timeout:
+        # prompt to retry connection
+        pass
+
+
 if __name__ == "__main__":
     app()
