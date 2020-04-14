@@ -36,6 +36,7 @@ def version_callback(value: bool):
         raise typer.Exit()
 
 
+# TODO Make this write licenses to a local cache so you don't always need to call API
 def write_licenses(license_file):
     """
     Writes text to a license file
@@ -44,12 +45,21 @@ def write_licenses(license_file):
     typer.echo("License written")
 
 
+# TODO Make this read licenses from local cach if they exist instead of calling APIO
 def read_licenses(license_file):
     """
     Reads text from a license file
     """
     for line in license_file:
         typer.echo(f"Config line: {line}")
+
+
+# TODO Get license metadata (Permissions, Conditions, Limitations)
+def get_metadata(license):
+    """
+    Gets metadata for a given LICENSE (Permissions, Conditions, Limitations)
+    """
+    pass
 
 
 @app.callback()
@@ -90,6 +100,8 @@ def list_licenses():
         pass
 
 
+# TODO Write license to file instead of to stdout
+# TODO Extract common logic from get_license, list_licenses, and get_info to separate #      function to be more DRY
 @app.command("get")
 def get_license(
     license: str,
