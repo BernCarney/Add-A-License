@@ -134,11 +134,20 @@ def get_license(
                 # they selected a valid license, now get the test
                 license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
                 license_bdy = license_json["body"]
+                license_name = license_json["name"]
 
                 # replace the [year] woth current year
                 license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
+
+                # TODO replace hard-coded name with user input name
                 license_bdy = license_bdy.replace("[fullname]", "Bernard J. Carney", 1)
-                typer.echo(f"{license_bdy}")
+
+                # Write to LICENSE file
+                path = Path("LICENSE")
+                typer.echo(f"\nWriting {license_name} to {path} file...")
+                path.write_text(license_bdy)
+                typer.echo("Finished!\n")
+
             else:
                 typer.echo("That license is not currently available.")
                 typer.echo("Please choose a license from available licenses below:\n")
