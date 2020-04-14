@@ -30,19 +30,42 @@ LICENSESAPI = "https://api.github.com/licenses"
 NOW = datetime.datetime.now()
 
 
-def print_version():
-    typer.echo(f"Add A License version: {__version__}")
-    raise typer.Exit()
+def version_callback(value: bool):
+    if value:
+        typer.echo(f"Add A License version: {__version__}")
+        raise typer.Exit()
+
+
+def write_licenses(license_file):
+    """
+    Writes text to a license file
+    """
+    license_file.write("Some text written by the app")
+    typer.echo("License written")
+
+
+def read_licenses(license_file):
+    """
+    Reads text from a license file
+    """
+    for line in license_file:
+        typer.echo(f"Config line: {line}")
 
 
 @app.callback()
-def main():
+def main(
+    version: bool = typer.Option(
+        None,
+        "--version",
+        "-v",
+        help="Print version and exit.",
+        callback=version_callback,
+        is_eager=True,
+    )
+):
     """
     A program to help you easily add a license to your project.
     """
-    #     version: bool = typer.Option(
-    #     False, "--version", "-v", help="Print version and exit.", callback=print_version
-    # )
 
 
 @app.command("list")
