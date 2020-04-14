@@ -4,8 +4,6 @@
 # various licenses to their project without having to cut and paste text.
 #
 # Workflow
-# 5. After retrieving any license the cli should prompt for your <FULL NAME> to put in
-#    the license
 # 6. Ask if this a new project or not
 # 7. (YES) just use the current year in the license file
 # 8. (NO) Ask for year the project started and make year range with current year
@@ -100,6 +98,11 @@ def list_licenses():
 @app.command("get")
 def get_license(
     license: str,
+    full_name: str = typer.Option(
+        ...,
+        prompt="\nEnter your full name to be included in the LICENSE file",
+        hidden=True,
+    ),
     dir: Path = typer.Option(
         "./",
         "--dir",
@@ -134,7 +137,7 @@ def get_license(
                 license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
 
                 # TODO replace hard-coded name with user input name
-                license_bdy = license_bdy.replace("[fullname]", "Bernard J. Carney", 1)
+                license_bdy = license_bdy.replace("[fullname]", full_name, 1)
 
                 # Check if directory exists and create if it doesn't
                 path = Path(dir, LICENSEFILE)
