@@ -1,15 +1,3 @@
-# Add A License
-#
-# Description: The goal of this CLI application is for a user to be able to easily add
-# various licenses to their project without having to cut and paste text.
-#
-# Workflow
-# 6. Ask if this a new project or not
-# 7. (YES) just use the current year in the license file
-# 8. (NO) Ask for year the project started and make year range with current year
-# 9. If (NO) but input year is same is current year, notify that you will not use range
-#    and just use current year
-
 from pathlib import Path
 import datetime
 import typer
@@ -39,7 +27,7 @@ def write_licenses(license_file):
     typer.echo("License written")
 
 
-# TODO Make this read licenses from local cach if they exist instead of calling APIO
+# TODO Make this read licenses from local cache if they exist instead of calling API
 def read_licenses(license_file):
     """
     Reads text from a license file
@@ -103,6 +91,7 @@ def get_license(
         prompt="\nEnter your full name to be included in the LICENSE file",
         hidden=True,
     ),
+    is_new: bool = typer.Option(True, prompt="\nIs this a new project?", hidden=True),
     dir: Path = typer.Option(
         "./",
         "--dir",
@@ -111,6 +100,7 @@ def get_license(
         file_okay=False,
         writable=True,
         resolve_path=True,
+        help="Where you want the LICENSE file to be saved",
     ),
 ):
     """
@@ -128,15 +118,23 @@ def get_license(
                 licenses_lst.append(item["key"])
 
             if license.lower() in licenses_lst:
-                # they selected a valid license, now get the test
+                # they selected a valid license, now get the license text
                 license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
                 license_bdy = license_json["body"]
                 license_name = license_json["name"]
 
-                # replace the [year] woth current year
-                license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
+                # replace the [year] with current year
+                if is_new:
+                    license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
+                else:
+                    start_date = typer.prompt("What year did this project start?")
+                    if start_date == str(NOW.year):
+                        license_bdy = license_bdy.replace("[year]", str(NOW.year), 1)
+                    else:
+                        date_range = f"{start_date}-{str(NOW.year)}"
+                        license_bdy = license_bdy.replace("[year]", date_range, 1)
 
-                # TODO replace hard-coded name with user input name
+                # replace [fullname] with prompted name
                 license_bdy = license_bdy.replace("[fullname]", full_name, 1)
 
                 # Check if directory exists and create if it doesn't
