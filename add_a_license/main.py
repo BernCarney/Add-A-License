@@ -4,11 +4,6 @@
 # various licenses to their project without having to cut and paste text.
 #
 # Workflow
-# 2. aalicense GET <LICENSE> with no options should get the license and put it in the
-#    current folder
-# 3. aalicense GET <LICENSE> [DIRECTORY] should place the license in the given path
-# 4. aalicense LIST should give and interactive prompt to choose either
-#    A. from a list of top licenses OR B. A list of all licenses supported
 # 5. After retrieving any license the cli should prompt for your <FULL NAME> to put in
 #    the license
 # 6. Ask if this a new project or not
@@ -28,6 +23,7 @@ from add_a_license.__version__ import __version__
 app = typer.Typer()
 LICENSESAPI = "https://api.github.com/licenses"
 NOW = datetime.datetime.now()
+LICENSEFILE = "LICENSE"
 
 
 def version_callback(value: bool):
@@ -100,7 +96,6 @@ def list_licenses():
         pass
 
 
-# TODO Write license to file instead of to stdout
 # TODO Extract common logic from get_license, list_licenses, and get_info to separate #      function to be more DRY
 @app.command("get")
 def get_license(
@@ -109,7 +104,6 @@ def get_license(
         "./",
         "--dir",
         "-d",
-        exists=True,
         dir_okay=True,
         file_okay=False,
         writable=True,
@@ -142,8 +136,11 @@ def get_license(
                 # TODO replace hard-coded name with user input name
                 license_bdy = license_bdy.replace("[fullname]", "Bernard J. Carney", 1)
 
+                # Check if directory exists and create if it doesn't
+                path = Path(dir, LICENSEFILE)
+                if not dir.exists():
+                    dir.mkdir()
                 # Write to LICENSE file
-                path = Path("LICENSE")
                 typer.echo(f"\nWriting {license_name} to {path} file...")
                 path.write_text(license_bdy)
                 typer.echo("Finished!\n")
@@ -182,7 +179,7 @@ def get_info(license: str):
                 licenses_lst.append(item["key"])
 
             if license.lower() in licenses_lst:
-                # they selected a valid license, now get the test
+                # they selected a valid license, now get the license body
                 license_json = requests.get(f"{LICENSESAPI}/{license.lower()}").json()
                 license_dsc = license_json["description"]
                 license_name = license_json["name"]
