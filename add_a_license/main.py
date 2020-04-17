@@ -71,12 +71,12 @@ def list_licenses():
 
         if r.status_code == 200:
             typer.echo("Available licenses:\n")
-            i = 1
-            for item in licenses_json:
+
+            for i, item in enumerate(licenses_json, 1):
                 name = item["name"]
                 abbr = item["spdx_id"]
                 typer.echo(f"{i:02d}. {abbr}:  {name}")
-                i += 1
+
     except requests.exceptions.Timeout:
         # prompt to retry connection
         pass
@@ -149,12 +149,12 @@ def get_license(
             else:
                 typer.echo("That license is not currently available.")
                 typer.echo("Please choose a license from available licenses below:\n")
-                i = 1
-                for item in licenses_json:
+
+                for i, item in enumerate(licenses_json, 1):
                     name = item["name"]
                     abbr = item["spdx_id"]
                     typer.echo(f"{i:02d}. {abbr}:  {name}")
-                    i += 1
+
         else:
             typer.echo(f"We didn't do it unfortunately")
     except requests.exceptions.Timeout:
@@ -201,12 +201,12 @@ def get_info(license: str):
             else:
                 typer.echo("That license is not currently available.")
                 typer.echo("Please choose a license from available licenses below:\n")
-                i = 1
-                for item in licenses_json:
+
+                for i, item in enumerate(licenses_json, 1):
                     name = item["name"]
                     abbr = item["spdx_id"]
                     typer.echo(f"{i:02d}. {abbr}:  {name}")
-                    i += 1
+
         else:
             typer.echo(f"We didn't do it unfortunately")
     except requests.exceptions.Timeout:
