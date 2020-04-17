@@ -32,8 +32,7 @@ def read_licenses(license_file):
     """
     Reads text from a license file
     """
-    for line in license_file:
-        typer.echo(f"Config line: {line}")
+    [typer.echo(f"Config line: {line}") for line in license_file]
 
 
 # TODO Get license metadata (Permissions, Conditions, Limitations)
@@ -109,13 +108,11 @@ def get_license(
     try:
         r = requests.get(LICENSESAPI)
         licenses_json = r.json()
-        licenses_lst = []
 
         # make sure API is available
         if r.status_code == 200:
             # build a list of the licenses available
-            for item in licenses_json:
-                licenses_lst.append(item["key"])
+            licenses_lst = [(item["key"]) for item in licenses_json]
 
             if license.lower() in licenses_lst:
                 # they selected a valid license, now get the license text
@@ -171,13 +168,11 @@ def get_info(license: str):
     try:
         r = requests.get(LICENSESAPI)
         licenses_json = r.json()
-        licenses_lst = []
 
         # make sure API is available
         if r.status_code == 200:
             # build a list of the licenses available
-            for item in licenses_json:
-                licenses_lst.append(item["key"])
+            licenses_lst = [(item["key"]) for item in licenses_json]
 
             if license.lower() in licenses_lst:
                 # they selected a valid license, now get the license body
@@ -185,10 +180,8 @@ def get_info(license: str):
                 license_dsc = license_json["description"]
                 license_name = license_json["name"]
                 license_url = license_json["html_url"]
-                license_perm = []
 
-                for item in license_json["permissions"]:
-                    license_perm.append(item)
+                license_perm = [(item) for item in license_json["permissions"]]
 
                 typer.echo(f"\nName: {license_name}")
                 typer.echo(f"\nURL: {license_url}")
