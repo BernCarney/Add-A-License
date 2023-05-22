@@ -12,7 +12,7 @@ aalicense = "add_a_license.main:app"
 python = "^3.7"
 typer = {extras = ["all"], version = "^0.1.1"}
 importlib_metadata = "^1.6.0"
-requests = "^2.23.0"
+requests = "^2.31.0"
 
 [tool.poetry.dev-dependencies]
 pytest = "^5.2"
